@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension version="1.5" type="plugin" group="vmpayment" method="upgrade">
+    <name>VM Payment, MoIP Checkout Transparente</name>
+    <creationDate>Abril 2015</creationDate>
+    <author>Luiz Felipe Weber | Pahe Bleasby</author>
+    <authorUrl>http://www.weber.eti.br | http://websampa.com.br</authorUrl>
+    <copyright>Copyright (C) 2015. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+    <version>2.0.0</version>
+    <description>Plugin de pagamento
+        &lt;div style=&quot;background:#E5F5FF;border:1px solid #99D6FF;padding:10px;margin:10px; -box-shadow: inset 0px 0px 10px #fff, 0px 0px 5px #ccc; -webkit-box-shadow: inset 0px 0px 10px #fff, 0px 0px 5px #ccc; -moz-box-shadow: inset 0px 0px 10px #fff, 0px 0px 5px #ccc;font-weight:normal;&quot;&gt;
+        &lt;h1&gt;Plugin de pagamento MoIP para Virtuemart 3.0 - Api Transparente.&lt;/h1&gt;
+        &lt;div style=&quot;float:right;width: 20%&quot;&gt;
+        &lt;img src=&quot;../plugins/vmpayment/moip/logo_moip.png&quot; /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 1&lt;/em&gt; - Crie sua conta MoIP ( caso não exista ) e solicite a ativação da &lt;b&gt;API MoIP&lt;/b&gt;. &lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 2&lt;/em&gt; - Configure o retorno automático em &lt;b&gt;Menu Meus Dados / Notificação das Transações&lt;/b&gt;. &lt;br /&gt; A url tem que ser assim: &lt;b&gt;http://urldositecom.br/index.php?option=com_virtuemart&amp;view=pluginresponse&amp;task=plugin&amp;tmpl=component&amp;task=pluginresponsereceived&amp;nasp=1&lt;/b&gt; &lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 2.1&lt;/em&gt; - Crie 2 campos extras no Virtuemart: "numero" e "bairro". O número da residência é obrigatório, assim como o bairro&lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 3&lt;/em&gt; - Habilite o plugin aqui &lt;a href=&quot;index.php?option=com_plugins&amp;view=plugins&amp;filter_search=moip&quot;&gt;Administrar Plugins&lt;/a&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 4&lt;/em&gt; - Instale Plugin por esta tela &lt;a href=&quot;index.php?option=com_virtuemart&amp;view=paymentmethod&quot;&gt;Métodos de pagamento&lt;/a&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 4.1&lt;/em&gt; - &lt;b&gt;Clique em Novo Método de Pagamento&lt;/b&gt; e preencha as informações:&lt;/div&gt;
+        &lt;div&gt;* Nome do Pagamento: &lt;b&gt;Cartões de crédito e débito, transferência e boleto bancário ( MoIP )&lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Publicado: &lt;b&gt;Sim&lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Descrição do pagamento: &lt;b&gt;Pague com cartão de crédito, boleto ou saldo MoIP&lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Método de pagamento: &lt;b&gt;MoIP&lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Grupo de Compradores: &lt;b&gt;-default-&lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 4.2&lt;/em&gt; - &lt;b&gt;Clique em Salvar&lt;/b&gt;.&lt;/div&gt;
+        &lt;div&gt;&lt;em&gt;Passo 5&lt;/em&gt; - Na &lt;b&gt;aba configurações&lt;/b&gt;, preencha os dados:&lt;/div&gt;
+
+        &lt;div&gt; &lt;br /&gt;Configurações do Plugin de Pagamento &lt;/div&gt;
+        &lt;div&gt;* Logotipos: &lt;b&gt;&lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Modo de teste &lt;b&gt;( Sim ou Não ) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Token (teste) &lt;b&gt; Menu do MoIP FERRAMENTAS / API / Chaves de acesso &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Chave de Acesso (teste) &lt;b&gt; Menu do MoIP FERRAMENTAS / API / Chaves de acesso &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Token (produção) &lt;b&gt; Menu do MoIP FERRAMENTAS / API / Chaves de acesso &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Chave de Acesso (produção) &lt;b&gt; Menu do MoIP FERRAMENTAS / API / Chaves de acesso &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Valor Mínimo &lt;b&gt; 0,01 &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Mensagem Pagamento &lt;b&gt; Mensagem que vai no detalhamento da compra dentro do MoIP &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Status Postado pelo MoIP &lt;b&gt; (Compra Aprovada, Em Análise, Estornada, Aguardando Pagamento, Cancelada ) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt; &lt;/div&gt;
+        &lt;div&gt; &lt;br /&gt;Configuração Parcelamento &lt;/div&gt;
+        &lt;div&gt;** Max. Parcelas Sem Juros &lt;b&gt; 3 &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;** Max. Parcelas Com Juros &lt;b&gt; 12 &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;** Taxa de Juros Crédito à vista &lt;b&gt; (1.99) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;** Taxa de Juros Parcelado &lt;b&gt; (1.99) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt; &lt;br /&gt;Formas de Pagamento Aceitas &lt;/div&gt;
+        &lt;div&gt;* Ativar Boleto &lt;b&gt; (Sim ou Não) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Ativar Cartões de Crédito &lt;b&gt; (Sim ou Não) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Ativar Débito em Conta &lt;b&gt; (Sim ou Não) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt; &lt;br /&gt;Cartões de Crédito Aceitos &lt;/div&gt;
+        &lt;div&gt;* Visa &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Mastercard &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Hipercard &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Diners &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Amex &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt; &lt;br /&gt;Pagamento com Débito Aceitos &lt;/div&gt;
+        &lt;div&gt;* Débito BB &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Débito Bradesco &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Débito Banrisul &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Débito Itaú &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt; &lt;br /&gt;Pagamento com Boleto Aceitos &lt;/div&gt;
+        &lt;div&gt;* Boleto Bradesco &lt;b&gt; (Sim ou Nâo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt; &lt;br /&gt;Outras configurações&lt;/div&gt;
+        &lt;div&gt;* Países &lt;b&gt; (Brasil) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Mínimo da Compra &lt;b&gt; (Mínimo da compra para ativar o módulo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Máximo da Compra &lt;b&gt; (Máximo da compra para ativar o módulo) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Custo por Transação &lt;b&gt; (Custo extra por transação feita) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Custo percentual total &lt;b&gt; (Custo extra por transação total) &lt;/b&gt;&lt;/div&gt;
+        &lt;div&gt;* Tarifa/Imposto &lt;b&gt; (Configurar de uma tarifa previamente cadastrada) &lt;/b&gt;&lt;/div&gt;
+
+        &lt;/div&gt;
+        &lt;div&gt;	Licença: &lt;a href=&quot;http://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;GNU/GPL v3&lt;/a&gt; - Desenvolvido por Luiz Weber - &lt;a href=&quot;http://weber.eti.br&quot;&gt;Weber TI&lt;/a&gt; 
+
+    </description>
+    <files>
+        <filename plugin="moip">moip.php</filename>
+        <filename>licenca-gplv3.txt</filename>
+        <filename>leiame.txt</filename>
+        <filename>gplv3-license.txt</filename>
+        <filename>logo_moip.png</filename>
+        <folder>assets</folder>
+        <folder>imagens</folder>
+        <folder>language</folder>
+        <folder>admin</folder>
+    </files>
+    <administration>
+        <languages folder="language">
+            <language tag="pt-BR">pt-BR.plg_vmpayment_moip.ini</language>
+            <language tag="en-GB">en-GB.plg_vmpayment_moip.ini</language>
+        </languages>
+    </administration>
+    <languages folder="language">
+        <language tag="pt-BR">pt-BR.plg_vmpayment_moip.ini</language>
+        <language tag="en-GB">en-GB.plg_vmpayment_moip.ini</language>
+    </languages>
+
+    <updateservers>
+        <server type="extension" priority="1" name="MoIP VirtueMart 2.0.x"><![CDATA[https://raw.github.com/luizwbr/Moip-Virtuemart2/master/updates.xml]]></server>
+    </updateservers>
+
+    <config>
+        <fields name="params" addfieldpath="/plugins/vmpayment/moip/admin/elements/">
+            <fieldset name="vmjpluginwarning">
+                <field name="payment_logos" type="vmfiles" label="VMPAYMENT_STANDARD_LOGOS" description="VMPAYMENT_STANDARD_LOGOS_DESC" directory="/images/stories/virtuemart/payment" default="default" hide_default="1" hide_none="1" stripext="0"   exclude="^_" />
+
+                <field name="modo_teste" type="radio" default="1" label="Modo de teste">
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                </field>
+
+                <field type="vmspacer" default="Teste" />
+                <field name="token_teste" type="text" size="60"  label="Token" description="Informe aqui o código da token cadastrado no Sandbox do MoIP (teste)" default="IKNUXXVNXLRUO4CGAI4SWPIIVSXXB9PT"/>
+                <field name="chave_teste" type="text" size="60"  label="Chave de acesso" description="Informe aqui a chave de acesso da loja (teste)" default="NPNKUYGTHB51YMGURH5KZ4NJPFJPOUVQDCNWMERM"/>
+
+                <field type="vmspacer" default="Produção" />
+                <field name="token_producao" type="text" size="60"  label="Token" description="Informe aqui o código da token cadastrado no Sandbox do MoIP (produção)" default=""/>
+                <field name="chave_producao" type="text" size="60"  label="Chave de acesso" description="Informe aqui a chave de acesso da loja (produção)" default=""/>
+
+                <field type="vmconfiguracao" label="Configuração Retorno automático" />
+                <field type="spacer"  />
+
+
+                <field type="vmspacer" default="Campos Extras Obrigatórios no Formulário de Registro" />
+                <field name="campo_logradouro" type="vmfield" size="30"  label="Campo Logradouro ( do endereço )" description="Nome do campo Logradouro ( endereço mesmo )" default="address_1"/>
+                <field name="campo_bairro" type="vmfield" size="30"  label="Campo Bairro" description="Nome do campo Bairro" default="bairro"/>
+                <field name="campo_numero" type="vmfield" size="30"  label="Campo Número ( do endereço )" description="Nome do campo Número do Endereço do usuário" default="numero"/>
+                <field name="campo_complemento" type="vmfield" size="30"  label="Campo Complemento ( do endereço )" description="Nome do campo Complemento do Endereço" default="address_2"/>
+                <field name="campo_telefone" type="vmfield" size="30"  label="Campo Telefone ( do cliente )" description="Nome do campo Telefone " default="phone_1"/>
+                <field name="campo_cpf" type="vmfield" size="30"  label="Campo CPF ( do cliente )" description="Nome do campo CPF " default="fax"/>
+
+                <field type="vmspacer" default="Campos Extras Opcionais" />
+                <field name="campo_data_nascimento" type="vmfield" size="30"  label="Campo Data de Nascimento ( do cliente )" description="Nome do campo Data de Nascimento "/>
+
+                <field type="vmspacer" default="Status postado pelo MoIP" />
+                <field name="transacao_concluida" type="vmorderstate" default="C" label="Aprovado" description="Status aprovado dentro do seu Virtuemart" />
+                <field name="transacao_em_analise" type="vmorderstate" label="Em Análise" description="Status em Análise pelo sistema do MoIP" />
+                <field name="transacao_estornada" type="vmorderstate" label="Estornada" description="Status Estornada pelo sistema do MoIP" />
+                <field name="transacao_nao_finalizada" type="vmorderstate" default="A" label="Aguardando Pagto" description="Status Aguardando Pagto dentro do seu Virtuemart" />
+                <field name="transacao_cancelada" type="vmorderstate" default="X" label="Cancelado" description="Status Cancelado dentro do seu Virtuemart" />
+
+                <field type="vmspacer" default="Configuração Parcelamento" />
+                <field name="max_parcela_sem_juros" type="text" size="10"  label="Máx. parcelas Sem Juros" description="Número total de parcelas sem juros" default="3"/>
+                <field name="max_parcela_com_juros" type="text" size="10"  label="Máx. parcelas Com Juros" description="Número total de parcelas com juros" default="12" />
+
+                <field name="taxa_credito" type="text" size="12"  label="Taxa Crédito à vista" description="Taxa para transações 1x no Crédito (1.99 = 1.99%)" default="1.99" />
+                <field name="taxa_parcelado" type="text" size="12"  label="Taxa Parcelado" description="Taxa para transações parcelado em mais de 2x no Crédito  (1.99 = 1.99%)" default="1.99"/>
+
+                <field type="vmspacer" default="Outras configurações" />
+                <field name="valor_minimo" type="text" size="10"  label="Valor mínimo" description="Valor mínimo para compras na loja." default="0.01"/>
+                <field name="mensagem_pagamento" type="text" size="60"  label="Mensagem Pagamento" description="Mensagem que aparece no ambiente do MoIP: Pagamento para a loja X." default="Pagamento para a loja X"/>
+
+                <field type="vmspacer" default="Formas de Pagamento Aceitas" />
+
+                <field name="ativar_cartao" type="radio" class="switch2" default="1" label="Ativar Cartões de Crédito">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="ativar_debito" type="radio" class="switch2" default="1" label="Ativar Débito em Conta">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="ativar_boleto" type="radio" class="switch2" default="1" label="Ativar Boleto Bancário">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+
+                <field type="vmspacer" default="Cartões de Crédito Aceitos" />
+                <field name="cartao_visa" type="radio" default="1" label="Visa">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="cartao_master" type="radio" default="1" label="Master">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="cartao_hipercard" type="radio" default="1" label="Hipercard">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="cartao_diners" type="radio" default="1" label="Diners">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="cartao_amex" type="radio" default="0" label="Amex">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+
+                <field type="vmspacer" default="Pagamento com Débito Aceitos" />
+                <field name="debito_bb" type="radio" default="1" label="Débito BB">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="debito_bradesco" type="radio" default="1" label="Débito Bradesco">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="debito_banrisul" type="radio" default="1" label="Débito Banrisul">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="debito_itau" type="radio" default="1" label="Débito Itaú">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+
+                <field type="vmspacer" default="Pagamento com Boleto Aceitos" />
+                <field name="boleto_bradesco" type="radio" default="1" label="Boleto Bradesco">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+
+                <field type="vmspacer" default="Extras" />
+                <field name="load_squeezeboc" type="radio" default="1" label="Carregar SqueezeBox JS">
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                </field>
+
+                <field name="countries" type="vmcountries"  scope="com_virtuemart" default="" label="Países" description="Países para validar este pagamento"/>
+                <field name="min_amount" type="text"  label="Mínimo da Compra" description="Valor mínimo da compra pra utilizar a MoIP" />
+                <field name="max_amount" type="text"  label="Máximo da Compra" description="Valor Máximo da compra para utilizar a MoIP" />
+                <field name="cost_per_transaction" type="text"  label="Custo por Transação" description="Custo total por transação" />
+                <field name="cost_percent_total" type="text"  label="Custo percentual total" description="Custo percentual total pela venda" />
+                <field name="tax_id" type="vmtaxes" scope="com_virtuemart"  label="Tarifa/Imposto" description="Imposto ou tarifa aplicada" />
+
+                <field name="modo_calculo_desconto" type="list" default="1" label="Modo de cálculo de descontos/tarifas">
+                    <option value="1">Modo Simples ( desconto normal )</option>
+                    <option value="2">Modo VirtueMart ( desconto progressivo )</option>
+                </field>
+
+                <field type="spacer"/>
+                <field type="vmabout" path="plugins/vmpayment/moip/" />
+                <field type="vmspacer" default="Licença: &lt;a href='http://www.gnu.org/licenses/gpl-3.0.html'&gt;GNU/GPL v3&lt;/a&gt; - Desenvolvido por Luiz Weber - &lt;a href='http://weber.eti.br'&gt;Weber TI&lt;/a&gt; | &lt;a href='http://webgenium.com.br'&gt;Webgenium System&lt;/a&gt;" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
