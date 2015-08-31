@@ -1,4 +1,4 @@
-#container ul {
+#container_moip ul {
 	padding: 0px !important;
 }
 
@@ -54,7 +54,7 @@
 .cards .discover.off {
   background-position: 51px 32px;
 }
-#container form {
+#container_moip form {
   -webkit-box-shadow: 0 1px 3px #bbbbbb;
   -moz-box-shadow: 0 1px 3px #bbbbbb;
   box-shadow: 0 1px 3px #bbbbbb;
@@ -70,28 +70,28 @@
   padding: 12px 24px 24px;
   width: 350px;
 }
-#container form h2 {
+#container_moip form h2 {
   color: #555;
   font-family: "Helvetica Neue", Verdana, Geneva, Arial, Helvetica, sans-serif;
   font-size: 16px;
   font-style: normal;
   margin-bottom: 0;
 }
-#container form li {
+#container_moip form li {
   margin: 8px 1px;
 }
-#container form label {
+#container_moip form label {
   color: #555;
   display: block;
   font-size: 14px;
 }
-#container form label small {
+#container_moip form label small {
   color: #aaa;
   font-size: 11px;
   line-height: 11px;
-  text-trans#container form: uppercase;
+  text-trans#container_moip form: uppercase;
 }
-#container form input {
+#container_moip form input {
   -webkit-box-shadow: inset 0 1px 3px -1px #aaaaaa;
   -moz-box-shadow: inset 0 1px 3px -1px #aaaaaa;
   box-shadow: inset 0 1px 3px -1px #aaaaaa;
@@ -105,7 +105,7 @@
   width: 275px;
   -moz-box-sizing: content-box;
 }
-#container form input.valid {
+#container_moip form input.valid {
   background: url(tick.png) 260px center no-repeat;
 }
 .vertical {
@@ -146,11 +146,11 @@
   body {
     margin: 0;
   }
-  #container {
+  #container_moip {
     margin-left: 32px;
     margin-top: 32px;
   }
-  #container form {
+  #container_moip form {
     float: left;
     margin: 0 0 32px;
   }
@@ -162,7 +162,7 @@
   }
 }
 
-#container li, #container ul {
+#container_moip li, #container_moip ul {
 	list-style: none;
 	margin: 0px;
 	padding: 0px;

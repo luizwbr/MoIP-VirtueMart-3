@@ -10,22 +10,20 @@ function fabrewin(jan) {
      }
     else {
        mpg_popup = window.open("", "mpg_popup","toolbar=0,location=0,directories=0,status=1,menubar=0,scrollbars=1,resizable=1,screenX=0,screenY=0,left=0,top=0,width=800,height=600");
-    }
-	if (jan == 1) {
-	
-	}
+    }	
 	return true;
 }
 
 function OpenSaibaMais(){
-	window.open('http://www.visa.com.br/vbv/vbv_saibamais.asp','principal','height=435,width=270,top=0,left=0,resizable=no,status=1')
+	window.open('http://www.visa.com.br/vbv/vbv_saibamais.asp','principal','height=435,width=270,top=0,left=0,resizable=no,status=1');
 }
-function FormataValor(id,tammax,teclapres) {
 
+function FormataValor(id,tammax,teclapres) {
+	var tecla;
 	if(window.event) { // Internet Explorer
-	    var tecla = teclapres.keyCode;
-	} else if(teclapres.which) { // Nestcape / firefox
-    	var tecla = teclapres.which;
+	    tecla = teclapres.keyCode;
+	} else if(teclapres.which) { 
+    	tecla = teclapres.which;
 	}
 
 	vr = document.getElementById(id).value;
@@ -103,58 +101,48 @@ function arredondamento (x, n){
 
 function show_parcelas(item) {
 	var id		= '';
-	var debito  = new Array('visa_electron','maestro');
-	var credito = new Array('visa','master','diners','elo','amex','discover','hipercard');
+	// var debito  = new Array('visa_electron','maestro');
+	var credito = new Array('visa','master','diners','amex','discover','hipercard');
 
-	// para cada, esconde os outros e mostra somente a div de pagamentos da bandeira solicitada
-	// verifica as formas de pagamento crédito para esconder o erro
 	for (var c in credito) {
-		id = 'div_'+credito[c];
-		if ($(id) != null) {
+		var cartao = credito[c];
+		id = '#div_'+cartao;
+		if (jQuery(id).length > 0) {
 			if (this.erro) {
 				mostra_erro(true);
 			} else {
 				mostra_erro(false);
 			}
-			mostra_div(id,item,credito[c]);
-		}
-	}
-
-	// verifica as formas de pagamento débito para esconder o erro
-	for (var d in debito) {
-		id = 'div_'+debito[d];
-		if ($(id) != null) {
-			if (status_erro()=='block'){
-				mostra_erro(false);
-			}
-			mostra_div(id,item,debito[d]);
+			mostra_div(id,item,cartao);
 		}
 	}
 }
 
 function mostra_div(id,item,valor) {
 	if (item == valor) {
-		$(id).style.display='block';
+		jQuery(id).show();
 	} else {
-		$(id).style.display='none';
+		jQuery(id).hide();
 	}
 }
 
 function mostra_erro(erro) {
 	if (erro) {
-		$('div_erro').style.display = 'block';
+		//$('div_erro').style.display = 'block';
+		jQuery('#div_erro').show();
 	} else {
-		$('div_erro').style.display = 'none';
+		//$('div_erro').style.display = 'none';
+		jQuery('#div_erro').hide();
 	}
 }
 
-function status_erro() {
-	return $('div_erro').style.display;
+function status_erro() {	
+	return jQuery('#div_erro').css('display');
 }
 
 // Método que marca o campo radio manualmente ( para o ie )
 function marcar_radio(id) {
-	$(id).checked='checked';
+	jQuery(id).checked='checked';
 }
 
 jQuery(document).ready(function(){
@@ -282,11 +270,7 @@ function submeter_cartao(formulario) {
 }
 
 function msgPop() {
-	SqueezeBox.initialize();
-	SqueezeBox.open($('system-message-cartao').clone().set('id','system-message-cartao'), {
-		handler: 'adopt',
-		size: {x: 500, y: 200}
-	});
+	jQuery.facebox(jQuery('#system-message-cartao').clone().attr('id','system-message-cartao').html());	
 }
 
 function pagamentoEmAndamento() {
@@ -377,8 +361,9 @@ function notificaPagamento(data) {
 			var debito = jQuery('input[name=tipo_pgto_debito]:visible:checked').length;
 			var boleto = jQuery('form#pagamento_boleto:visible').length;
 			if ((debito > 0 || boleto > 0) && data.Codigo == 0) {			
-				SqueezeBox.initialize();
-				SqueezeBox.open(data.url, {handler: 'iframe', size: {x:750, y:500}});
+				// SqueezeBox.initialize();
+				// SqueezeBox.open(data.url, {handler: 'iframe', size: {x:750, y:500}});
+				jQuery.facebox('<iframe width="1000" height="680" name="iframemoip" src="'+data.url+'"></iframe>');
 			}
 			if (!erro) {
 				if (data.Codigo == 0) {
@@ -425,10 +410,13 @@ function notificaPagamento(data) {
 					jQuery('#div_erro_conteudo').show().html(mensagem+'<br />');					
 					jQuery('#div_erro_conteudo').animate({"padding":"20px","font-size":"15px"}, 1000);
 					
-					SqueezeBox.open($('system-message-cartao').clone().addClass('error').set('id','system-message-cartao'), {
+					jQuery.facebox(jQuery('#div_erro_conteudo').clone().attr('id','system-message-cartao').html());
+
+					/*
+					SqueezeBox.open(jQuery('system-message-cartao').clone().addClass('error').set('id','system-message-cartao'), {
 						handler: 'adopt',
 						size: {x: 500, y: 200}
-					});					
+					});*/
 				}
 			}
 		}				

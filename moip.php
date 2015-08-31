@@ -119,6 +119,10 @@ function getPluginParams(){
         $this->order_id = $order['details']['BT']->order_number;
 
         $url  = JURI::root();
+
+        vmJsApi::js('facebox');
+        vmJsApi::css('facebox');
+
     // carrega os js e css
         $doc = & JFactory::getDocument();
         $url_lib      = $url. DS .'plugins'. DS .'vmpayment'. DS .'moip'.DS;
@@ -210,7 +214,7 @@ function getPluginParams(){
        $this->setaUrlJs('https://desenvolvedor.moip.com.br/sandbox/transparente/MoipWidget-v2.js');
    } else {
       // url do ambiente de produção
-       $this->setaUrlRequest('https://api.moip.com.br/ws/alpha/EnviarInstrucao/Unica');
+       $this->setaUrlRequest('https://www.moip.com.br/ws/alpha/EnviarInstrucao/Unica');
        $this->setaUrlJs('https://www.moip.com.br/transparente/MoipWidget-v2.js');
    }
 
@@ -613,12 +617,103 @@ function plgVmgetPaymentCurrency($virtuemart_paymentmethod_id, &$paymentCurrency
     return ($method->cost_per_transaction + ($cart_prices['salesPrice'] * $cost_percent_total * 0.01));
 }
 
-function setCartPrices (VirtueMartCart $cart, &$cart_prices, $method, $progressive) {
+function setCartPrices (VirtueMartCart $cart, &$cart_prices, $method) {
 
         if ($method->modo_calculo_desconto == '2') {
-          return parent::setCartPrices($cart, $cart_prices, $method, true);            
+            return parent::setCartPrices($cart, $cart_prices, $method);
         } else {
-          return parent::setCartPrices($cart, $cart_prices, $method, false);
+
+            if (!class_exists ('calculationHelper')) {
+                require(JPATH_VM_ADMINISTRATOR . DS . 'helpers' . DS . 'calculationh.php');
+            }
+            $_psType = ucfirst ($this->_psType);
+            $calculator = calculationHelper::getInstance ();
+
+            $cart_prices[$this->_psType . 'Value'] = $calculator->roundInternal ($this->getCosts ($cart, $method, $cart_prices), 'salesPrice');
+
+            /*
+            if($this->_psType=='payment'){
+                $cartTotalAmountOrig=$this->getCartAmount($cart_prices);
+                $cartTotalAmount=($cartTotalAmountOrig + $method->cost_per_transaction) / (1 -($method->cost_percent_total * 0.01));
+                $cart_prices[$this->_psType . 'Value'] = $cartTotalAmount - $cartTotalAmountOrig;
+            }
+            */
+
+            $taxrules = array();
+            if(isset($method->tax_id) and (int)$method->tax_id === -1){
+
+            } else if (!empty($method->tax_id)) {
+                $cart_prices[$this->_psType . '_calc_id'] = $method->tax_id;
+
+                $db = JFactory::getDBO ();
+                $q = 'SELECT * FROM #__virtuemart_calcs WHERE `virtuemart_calc_id`="' . $method->tax_id . '" ';
+                $db->setQuery ($q);
+                $taxrules = $db->loadAssocList ();
+
+                if(!empty($taxrules) ){
+                    foreach($taxrules as &$rule){
+                        if(!isset($rule['subTotal'])) $rule['subTotal'] = 0;
+                        if(!isset($rule['taxAmount'])) $rule['taxAmount'] = 0;
+                        $rule['subTotalOld'] = $rule['subTotal'];
+                        $rule['taxAmountOld'] = $rule['taxAmount'];
+                        $rule['taxAmount'] = 0;
+                        $rule['subTotal'] = $cart_prices[$this->_psType . 'Value'];
+                    }
+                }
+            } else {
+                $taxrules = array_merge($calculator->_cartData['VatTax'],$calculator->_cartData['taxRulesBill']);
+
+                if(!empty($taxrules) ){
+                    $denominator = 0.0;
+                    foreach($taxrules as &$rule){
+                        //$rule['numerator'] = $rule['calc_value']/100.0 * $rule['subTotal'];
+                        if(!isset($rule['subTotal'])) $rule['subTotal'] = 0;
+                        if(!isset($rule['taxAmount'])) $rule['taxAmount'] = 0;
+                        $denominator += ($rule['subTotal']-$rule['taxAmount']);
+                        $rule['subTotalOld'] = $rule['subTotal'];
+                        $rule['subTotal'] = 0;
+                        $rule['taxAmountOld'] = $rule['taxAmount'];
+                        $rule['taxAmount'] = 0;
+                        //$rule['subTotal'] = $cart_prices[$this->_psType . 'Value'];
+                    }
+                    if(empty($denominator)){
+                        $denominator = 1;
+                    }
+
+                    foreach($taxrules as &$rule){
+                        $frac = ($rule['subTotalOld']-$rule['taxAmountOld'])/$denominator;
+                        $rule['subTotal'] = $cart_prices[$this->_psType . 'Value'] * $frac;
+                        vmdebug('Part $denominator '.$denominator.' $frac '.$frac,$rule['subTotal']);
+                    }
+                }
+            }
+
+
+            if(empty($method->cost_per_transaction)) $method->cost_per_transaction = 0.0;
+            if(empty($method->cost_percent_total)) $method->cost_percent_total = 0.0;
+
+            if (count ($taxrules) > 0 ) {
+
+                $cart_prices['salesPrice' . $_psType] = $calculator->roundInternal ($calculator->executeCalculation ($taxrules, $cart_prices[$this->_psType . 'Value'],true,false), 'salesPrice');
+                //vmdebug('I am in '.get_class($this).' and have this rules now',$taxrules,$cart_prices[$this->_psType . 'Value'],$cart_prices['salesPrice' . $_psType]);
+                $cart_prices[$this->_psType . 'Tax'] = $calculator->roundInternal (($cart_prices['salesPrice' . $_psType] -  $cart_prices[$this->_psType . 'Value']), 'salesPrice');
+                reset($taxrules);
+                $taxrule =  current($taxrules);
+                $cart_prices[$this->_psType . '_calc_id'] = $taxrule['virtuemart_calc_id'];
+
+                foreach($taxrules as &$rule){
+                    if(isset($rule['subTotalOld'])) $rule['subTotal'] += $rule['subTotalOld'];
+                    if(isset($rule['taxAmountOld'])) $rule['taxAmount'] += $rule['taxAmountOld'];
+                }
+
+            } else {
+                $cart_prices['salesPrice' . $_psType] = $cart_prices[$this->_psType . 'Value'];
+                $cart_prices[$this->_psType . 'Tax'] = 0;
+                $cart_prices[$this->_psType . '_calc_id'] = 0;
+            }
+
+
+            return $cart_prices['salesPrice' . $_psType];
         }
     }
     /**
